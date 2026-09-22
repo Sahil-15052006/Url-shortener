@@ -1,0 +1,21 @@
+// Prisma schema for URL Shortener — see plan.md §4
+// FastAPI · Prisma Python client · Neon Postgres (pooled via PgBouncer)
+
+generator client {
+  provider = "prisma-client-py"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model ShortUrl {
+  id            String   @id @default(cuid())
+  code          String   @unique // 7-char base62, e.g. "xK3s9Qz"
+  originalUrl   String 
+  createdAt     DateTime @default(now())
+  expiresAt     DateTime 
+}
+
+
