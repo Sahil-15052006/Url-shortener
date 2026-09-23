@@ -19,7 +19,6 @@ async def create_short_url(original_url: str):
     for _ in range(MAX_RETRIES):
         code = generate_code()
         try:
-            await db.connect()
             return await db.shorturl.create(
                 data={
                     "code": code,
@@ -31,17 +30,9 @@ async def create_short_url(original_url: str):
             continue
         except PrismaError:
             raise
-        finally:
-            await db.disconnect()
 
     raise RuntimeError("Could not generate unique code")
 
 
 async def get_original_url(code: str):
-    try :
-        await db.connect()
-        return await db.shorturl.find_unique(where={"code": code})
-    except PrismaError :
-        raise
-    finally:
-        await db.disconnect()
+    return await db.shorturl.find_unique(where={"code": code})

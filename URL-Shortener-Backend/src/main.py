@@ -1,10 +1,27 @@
 from fastapi import FastAPI
-from routes.shortener import router as shorten_router
-from routes.shortener import router as redirect_to_url
+from prisma.errors import PrismaError
 
-app = FastAPI()
-app.include_router(shorten_router)
-app.include_router(redirect_to_url)
+from db.db import db
+from routes.shortener import router as shortener_router
+from contextlib import asynccontextmanager
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    try:
+        await db.connect()
+        await db.execute_raw("SELECT 1")
+        print("Database connected successfully")
+    except (PrismaError, OSError) as e:
+        raise RuntimeError(f"Database connection failed: {e}") from e
+    yield
+    if db.is_connected():
+        await db.disconnect()
+
+
+app = FastAPI(lifespan=lifespan)
+app.include_router(shortener_router)
+
 
 @app.get("/")
 def read_root():
