@@ -2,10 +2,11 @@ import asyncio
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from prisma.errors import PrismaError
 
 from cleaner import clean_expired_urls
-from db.db import db, direct_db
+from db.db import _get_env, db, direct_db
 from db import redis as redis_cache
 from routes.shortener import router as shortener_router
 
@@ -45,6 +46,13 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 app.include_router(shortener_router)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[o.strip() for o in _get_env("FRONTEND_URL").split(",")],
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type"],
+)
 
 
 @app.get("/")
