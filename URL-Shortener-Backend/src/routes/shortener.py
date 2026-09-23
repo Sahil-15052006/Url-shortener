@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import RedirectResponse
 from prisma.errors import PrismaError
 from schemas.shortener import ShortenRequest, ShortenResponse
-from services.shortener import create_short_url, get_original_url
+from services.shortener import create_short_url, get_original_url, get_original_url_cached
 
 router = APIRouter()
 
@@ -24,8 +24,8 @@ async def shorten_url(payload: ShortenRequest):
     )
 
 
-@router.get("/{code}")
-async def redirect_to_url(code: str):
+@router.get("/direct/{code}")
+async def redirect_to_url_direct(code: str):
     try:
         record = await get_original_url(code)
     except PrismaError as e:
@@ -33,3 +33,14 @@ async def redirect_to_url(code: str):
     if record is None:
         raise HTTPException(status_code=404, detail="not exists")
     return RedirectResponse(url=record.originalUrl, status_code=307)
+
+
+@router.get("/{code}")
+async def redirect_to_url(code: str):
+    try:
+        original_url = await get_original_url_cached(code)
+    except PrismaError as e:
+        raise HTTPException(status_code=503, detail="Database unavailable") from e
+    if original_url is None:
+        raise HTTPException(status_code=404, detail="not exists")
+    return RedirectResponse(url=original_url, status_code=307)

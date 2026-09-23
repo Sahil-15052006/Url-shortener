@@ -10,4 +10,5 @@ dependencies = [
     "prisma>=0.15.0",
     "pydantic>=2.13.5",
     "redis>=8.1.0",
+    "upstash-redis>=1.8.0",
 ]
