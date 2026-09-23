@@ -1,10 +1,24 @@
+import asyncio
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from prisma.errors import PrismaError
 
+from cleaner import clean_expired_urls
 from db.db import db, direct_db
 from db import redis as redis_cache
 from routes.shortener import router as shortener_router
-from contextlib import asynccontextmanager
+
+CLEANER_INTERVAL_SECONDS = 24 * 60 * 60  # daily
+
+
+async def _cleaner_loop() -> None:
+    while True:
+        try:
+            await clean_expired_urls()
+        except (PrismaError, OSError) as e:
+            print(f"Cleaner failed: {e}")
+        await asyncio.sleep(CLEANER_INTERVAL_SECONDS)
 
 
 @asynccontextmanager
@@ -19,7 +33,9 @@ async def lifespan(app: FastAPI):
         await redis_cache.connect()
     except (PrismaError, OSError) as e:
         raise RuntimeError(f"Database connection failed: {e}") from e
+    cleaner_task = asyncio.create_task(_cleaner_loop())
     yield
+    cleaner_task.cancel()
     if db.is_connected():
         await db.disconnect()
     if direct_db.is_connected():

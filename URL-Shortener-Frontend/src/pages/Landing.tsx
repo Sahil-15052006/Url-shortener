@@ -2,7 +2,7 @@ import { Link } from "react-scroll";
 
 export default function Landing() {
   return (
-    <div className="mx-auto max-w-5xl px-4 py-16 font-sans min-h-screen">
+    <div className="mx-auto max-w-5xl px-4 py-16 font-sans">
       <div className="mx-auto max-w-2xl text-center">
         <p className="mb-4 inline-block rounded-full border border-neutral-300 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-neutral-600 dark:border-neutral-700 dark:text-neutral-300">
           Fast · Minimal · Free
