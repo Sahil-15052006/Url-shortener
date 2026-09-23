@@ -1,6 +1,8 @@
 import { useState } from "react";
 
-const API_BASE = import.meta.env.VITE_API_URL ?? "";
+const API_BASE = (import.meta.env.VITE_API_URL as string | undefined) ?? "";
+// Short links live on the API (GET /{code}), not on the frontend origin.
+const LINK_BASE = API_BASE || window.location.origin;
 
 type ShortenResult = {
   code: string;
@@ -42,8 +44,7 @@ export default function Shorten() {
 
   async function handleCopy() {
     if (!result) return;
-    const full = `${window.location.origin}${result.short_url}`;
-    await navigator.clipboard.writeText(full).catch(() => {});
+    await navigator.clipboard.writeText(`${LINK_BASE}${result.short_url}`).catch(() => {});
     setCopied(true);
   }
 
@@ -87,10 +88,12 @@ export default function Shorten() {
           </p>
           <div className="mt-2 flex items-center justify-between gap-3">
             <a
-              href={result.short_url}
+              href={`${LINK_BASE}${result.short_url}`}
+              target="_blank"
+              rel="noreferrer"
               className="truncate text-lg font-bold text-black underline-offset-4 hover:underline dark:text-white"
             >
-              {window.location.origin}{result.short_url}
+              {LINK_BASE}{result.short_url}
             </a>
             <button
               onClick={handleCopy}
