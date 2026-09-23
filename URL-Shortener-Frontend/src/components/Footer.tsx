@@ -1,4 +1,4 @@
-const GITHUB_URL = "https://github.com/sahilsachdev/URL-Shortener";
+const GITHUB_URL = "https://github.com/Sahil-15052006/Url-shortener";
 
 export default function Footer() {
   return (

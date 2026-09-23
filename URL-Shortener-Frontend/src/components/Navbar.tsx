@@ -1,6 +1,6 @@
 import { Link } from "react-scroll";
 
-const GITHUB_URL = "https://github.com/sahilsachdev/URL-Shortener";
+const GITHUB_URL = "https://github.com/Sahil-15052006/Url-shortener";
 
 export default function Navbar({ dark, onToggle }: { dark: boolean; onToggle: () => void }) {
   const btn =
@@ -18,10 +18,10 @@ export default function Navbar({ dark, onToggle }: { dark: boolean; onToggle: ()
           Short<span className="text-neutral-500 dark:text-neutral-400">.ly</span>
         </Link>
         <nav className="flex items-center gap-1 font-sans">
-          <Link to="home" smooth duration={500} offset={-64} className={btn}>
+          <Link to="home" smooth duration={500} offset={-64} className={`${btn} hidden sm:block`}>
             Home
           </Link>
-          <Link to="shorten" smooth duration={500} offset={-64} className={btn}>
+          <Link to="shorten" smooth duration={500} offset={-64} className={`${btn} hidden sm:block`} > 
             Shorten URL
           </Link>
           <a
