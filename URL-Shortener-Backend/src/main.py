@@ -5,9 +5,12 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from prisma.errors import PrismaError
+
+load_dotenv()
 
 from cleaner import clean_expired_urls
 from db.db import _get_env, db, direct_db
